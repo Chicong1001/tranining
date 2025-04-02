@@ -1,0 +1,4 @@
+username,email,password,roles
+john_doe,john@example.com,123456,USER
+admin01,admin@example.com,123456,ADMIN
+super_user,super@example.com,123456,USER;ADMIN
