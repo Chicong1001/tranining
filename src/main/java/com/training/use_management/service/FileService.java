@@ -4,6 +4,7 @@ import com.training.use_management.entity.Role;
 import com.training.use_management.entity.User;
 import com.training.use_management.repository.RoleRepository;
 import com.training.use_management.repository.UserRepository;
+import com.training.use_management.utils.FileUtil;
 import com.training.use_management.utils.PasswordUtil;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -32,10 +33,12 @@ public class FileService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final FileUtil fileUtil;
 
-    public FileService(UserRepository userRepository, RoleRepository roleRepository) {
+    public FileService(UserRepository userRepository, RoleRepository roleRepository, FileUtil fileUtil) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.fileUtil = fileUtil;
     }
 
     private static final String UPLOAD_DIR = "uploads/";
@@ -48,7 +51,11 @@ public class FileService {
                 response.put("message", "File is empty");
                 return response;
             }
-
+            // Kiểm tra kích thước file
+            if (!fileUtil.isFileSizeValid(file.getSize())) {
+                response.put("message", "File is too large. Max allowed size is " + fileUtil.getMaxFileSizeConfig());
+                return response;
+            }
             // Kiểm tra phần mở rộng file hợp lệ
             String originalFilename = file.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);

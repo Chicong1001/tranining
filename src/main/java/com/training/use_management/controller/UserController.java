@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<User>> getUsers(
-            @RequestParam(defaultValue = "5") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         return userService.getUsers(page, size);
@@ -60,38 +60,8 @@ public class UserController {
     }
 
     @PostMapping("/generate-fake-users")
-    public ResponseEntity<?> generateFakeUsers(@RequestParam(defaultValue = "1000") int count) {
+    public ResponseEntity<?> generateFakeUsers(@RequestParam(defaultValue = "10000") int count) {
         String result = userService.generateFakeUsers(count);
         return ResponseEntity.ok(result);
     }
 }
-
-//    @PostMapping("/import")
-//    public ResponseEntity<String> importCSV(@RequestParam("file") MultipartFile file) {
-//        // Xử lý đọc file CSV và lưu vào database
-//        return ResponseEntity.ok("Import thành công");
-//    }
-//
-//    @GetMapping("/export")
-//    public void exportCSV(HttpServletResponse response) throws IOException {
-//        response.setContentType("text/csv");
-//        response.setHeader("Content-Disposition", "attachment; filename=users.csv");
-//        PrintWriter writer = response.getWriter();
-//        writer.println("ID,Username,Email");
-//        userRepository.findAll().forEach(user ->
-//                writer.println(user.getId() + "," + user.getUsername() + "," + user.getEmail())
-//        );
-//    }
-
-//    @PostMapping("/upload")
-//    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-//        String fileUrl = s3Service.uploadFile(file);
-//        return ResponseEntity.ok(fileUrl);
-//    }
-//
-//    @GetMapping("/download/{filename}")
-//    public ResponseEntity<byte[]> downloadFile(@PathVariable String filename) {
-//        byte[] fileData = s3Service.downloadFile(filename);
-//        return ResponseEntity.ok().body(fileData);
-//    }
-

@@ -2,6 +2,7 @@ package com.training.use_management.controller;
 
 import com.training.use_management.dto.requestDTO.LoginRequest;
 import com.training.use_management.dto.requestDTO.RegisterRequest;
+import com.training.use_management.entity.User;
 import com.training.use_management.service.AuthService;
 import com.training.use_management.utils.ValidationUtil;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class AuthController {
     // ✅ API Đăng ký
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request,
-                                      BindingResult result) {
+                                         BindingResult result) {
         if (result.hasErrors()) {
             return ValidationUtil.handleValidationErrors(result);
         }

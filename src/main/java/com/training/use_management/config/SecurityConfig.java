@@ -33,12 +33,19 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",         // API Authentication (đã có)
+                                "/swagger-ui/**",       // Cho phép truy cập Swagger UI
+                                "/v3/api-docs/**",      // Cho phép truy cập OpenAPI docs
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Dùng JWT nên không lưu session
                 .authenticationProvider(authenticationProvider()) // Cấu hình authentication
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
