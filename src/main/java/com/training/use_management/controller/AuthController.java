@@ -1,21 +1,15 @@
 package com.training.use_management.controller;
 
 import com.training.use_management.dto.requestDTO.LoginRequest;
-import com.training.use_management.dto.requestDTO.RegisterRequest;
-import com.training.use_management.entity.User;
+import com.training.use_management.dto.requestDTO.UserRequest;
 import com.training.use_management.service.AuthService;
 import com.training.use_management.utils.ValidationUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,7 +23,7 @@ public class AuthController {
 
     // ✅ API Đăng ký
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request,
+    public ResponseEntity<?> register(@Valid @RequestBody UserRequest request,
                                          BindingResult result) {
         if (result.hasErrors()) {
             return ValidationUtil.handleValidationErrors(result);

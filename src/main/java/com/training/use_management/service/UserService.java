@@ -1,8 +1,9 @@
 package com.training.use_management.service;
 
 import com.github.javafaker.Faker;
-import com.training.use_management.dto.requestDTO.RegisterRequest;
+import com.training.use_management.dto.requestDTO.UserRequest;
 import com.training.use_management.dto.responseDTO.UserProfileDTO;
+import com.training.use_management.dto.responseDTO.UserResponse;
 import com.training.use_management.entity.Role;
 import com.training.use_management.entity.User;
 import com.training.use_management.repository.RoleRepository;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -59,7 +61,7 @@ public class UserService {
         return ResponseEntity.ok(users);
     }
 
-    public ResponseEntity<?> createUser(RegisterRequest request) {
+    public ResponseEntity<?> createUser(UserRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
         System.out.println(currentUsername);
@@ -90,19 +92,35 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(createUser);
     }
 
-    public ResponseEntity<User> updateUser(Long id, User userDetails) {
+    public ResponseEntity<?> updateUser(Long id, UserRequest userRequest) {
         return userRepository.findById(id)
                 .map(user -> {
-                    user.setUsername(userDetails.getUsername());
-                    user.setEmail(userDetails.getEmail());
-                    user.setPassword(PasswordUtil.encodePassword(userDetails.getPassword()));
+                    user.setUsername(userRequest.getUsername());
+                    user.setEmail(userRequest.getEmail());
+
+                    if (userRequest.getPassword() != null && userRequest.getPassword().isEmpty()) {
+                        user.setPassword(PasswordUtil.encodePassword(userRequest.getPassword()));
+                    }
 
                     Role userRole = roleRepository.findByName("USER")
                             .orElseThrow(() -> new RuntimeException("Role not found: USER"));
 
-                    user.setRoles(Collections.singleton(userRole));
+                    if (!user.getRoles().contains(userRole)) {
+                        user.getRoles().add(userRole);
+                    }
 
-                    return ResponseEntity.ok(userRepository.save(user));
+                    User updateUser = userRepository.save(user);
+
+                    // Return DTO
+                    UserResponse response = new UserResponse(
+                            updateUser.getId(),
+                            updateUser.getUsername(),
+                            updateUser.getEmail(),
+                            updateUser.getRoles().stream()
+                                    .map(Role::getName)
+                                    .collect(Collectors.toSet())
+                    );
+                    return ResponseEntity.ok(response);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

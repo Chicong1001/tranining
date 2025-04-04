@@ -59,6 +59,7 @@ public class FileService {
             // Kiểm tra phần mở rộng file hợp lệ
             String originalFilename = file.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+
             List<String> allowedExtensions = Arrays.asList("csv");
 
             if (!allowedExtensions.contains(fileExtension.toLowerCase())) {

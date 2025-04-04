@@ -1,7 +1,7 @@
 package com.training.use_management.config;
 
 import com.training.use_management.security.JwtAuthenticationFilter;
-import com.training.use_management.service.CustomUserDetailsService;
+import com.training.use_management.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,4 +1,4 @@
-package com.training.use_management.service;
+package com.training.use_management.security;
 
 import com.training.use_management.entity.User;
 import com.training.use_management.repository.UserRepository;
@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

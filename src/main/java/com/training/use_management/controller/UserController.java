@@ -1,6 +1,6 @@
 package com.training.use_management.controller;
 
-import com.training.use_management.dto.requestDTO.RegisterRequest;
+import com.training.use_management.dto.requestDTO.UserRequest;
 import com.training.use_management.service.UserService;
 import com.training.use_management.utils.ValidationUtil;
 import jakarta.validation.Valid;
@@ -36,22 +36,22 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody RegisterRequest registerRequest,
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserRequest userRequest,
                                         BindingResult result) {
         if (result.hasErrors()) {
             return ValidationUtil.handleValidationErrors(result);
         }
-        return userService.createUser(registerRequest);
+        return userService.createUser(userRequest);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<?> updateUser(@Valid @PathVariable Long id,
-                                        @RequestBody User userDetails,
+                                        @RequestBody UserRequest userRequest,
                                         BindingResult result) {
         if (result.hasErrors()) {
             return ValidationUtil.handleValidationErrors(result);
         }
-        return userService.updateUser(id, userDetails);
+        return userService.updateUser(id, userRequest);
     }
 
     @DeleteMapping("/{id}")
