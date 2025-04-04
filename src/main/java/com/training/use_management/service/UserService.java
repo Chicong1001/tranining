@@ -67,7 +67,7 @@ public class UserService {
         System.out.println(currentUsername);
         Optional<User> adminUserOpt = userRepository.findUserWithAdminRole(currentUsername);
         System.out.println(adminUserOpt);
-        if (!adminUserOpt.isPresent()) {
+        if (adminUserOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Admin role required");
         }
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -105,9 +105,7 @@ public class UserService {
                     Role userRole = roleRepository.findByName("USER")
                             .orElseThrow(() -> new RuntimeException("Role not found: USER"));
 
-                    if (!user.getRoles().contains(userRole)) {
-                        user.getRoles().add(userRole);
-                    }
+                    user.getRoles().add(userRole);
 
                     User updateUser = userRepository.save(user);
 
@@ -135,23 +133,35 @@ public class UserService {
     }
 
     public String generateFakeUsers(int count) {
+
+        long start = System.currentTimeMillis();
+        final String encodedPassword = PasswordUtil.encodePassword("Password123!");
+
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Role not found: USER"));
+
         List<User> users = new ArrayList<>();
 
         for (int i = 1; i <= count; i++) {
             User user = new User();
             user.setUsername(faker.name().username());  // Tên ngẫu nhiên
             user.setEmail(faker.internet().emailAddress());  // Email ngẫu nhiên
-            user.setPassword(PasswordUtil.encodePassword("Password123!")); // Mật khẩu cố định
+            user.setPassword(encodedPassword); // Mật khẩu cố định
 
-            Role userRole = roleRepository.findByName("USER")
-                    .orElseThrow(() -> new RuntimeException("Role not found: USER"));
             user.setRoles(Collections.singleton(userRole));
 
             users.add(user);
         }
 
         userRepository.saveAll(users);
-        return "✅ " + count + " fake users have been created!";
+
+        long end = System.currentTimeMillis();
+        return "✅ Created " + count + " users in " + (end - start) + "ms";
     }
 
+//    public boolean validateUser(User user) {
+//    }
+//
+//    public User createUser(String testUser, String password, String roleUser) {
+//    }
 }

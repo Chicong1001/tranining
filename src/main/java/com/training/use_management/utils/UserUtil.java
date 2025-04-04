@@ -3,11 +3,14 @@ package com.training.use_management.utils;
 import com.training.use_management.dto.requestDTO.UserRequest;
 import com.training.use_management.entity.Role;
 import com.training.use_management.entity.User;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 
 import java.util.Set;
 
+@Component
 public class UserUtil {
 
     public static User createUser(UserRequest userRequest, Set<Role> roles) {
