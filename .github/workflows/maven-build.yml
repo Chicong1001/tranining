@@ -20,7 +20,7 @@ jobs:
           distribution: "temurin"
 
       - name: ⚙️ Build with Maven
-        run: mvn clean install -DskipTests=false
+        run: mvn clean install -DskipTests=false -e
 
       - name: 🧪 Run Tests
         run: mvn test
