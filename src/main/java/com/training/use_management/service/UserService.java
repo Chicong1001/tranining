@@ -6,9 +6,11 @@ import com.training.use_management.dto.responseDTO.UserProfileDTO;
 import com.training.use_management.dto.responseDTO.UserResponse;
 import com.training.use_management.entity.Role;
 import com.training.use_management.entity.User;
+import com.training.use_management.exception.UserNotFoundException;
 import com.training.use_management.repository.RoleRepository;
 import com.training.use_management.repository.UserRepository;
 import com.training.use_management.utils.PasswordUtil;
+import com.training.use_management.utils.UserUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +48,8 @@ public class UserService {
                     );
                     return ResponseEntity.ok(userProfileDTO);
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+
     }
 
     public ResponseEntity<Page<User>> getUsers(int page, int size) {
@@ -78,17 +81,23 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Email is already registered!");
         }
 
-        User newUser = new User();
-        newUser.setUsername(request.getUsername());
-        newUser.setEmail(request.getEmail());
-        newUser.setPassword(PasswordUtil.encodePassword(request.getPassword()));
+//        User newUser = new User();
+//        newUser.setUsername(request.getUsername());
+//        newUser.setEmail(request.getEmail());
+//        newUser.setPassword(PasswordUtil.encodePassword(request.getPassword()));
+//
+//        Role userRole = roleRepository.findByName("USER")
+//                .orElseThrow(() -> new RuntimeException("Role not found: USER"));
+//
+//        newUser.setRoles(Collections.singleton(userRole));
+//        newUser.setRoles(Set.of(new Role("USER")));
 
         Role userRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RuntimeException("Role not found: USER"));
 
-        newUser.setRoles(Collections.singleton(userRole));
-//        newUser.setRoles(Set.of(new Role("USER")));
+        User newUser = UserUtil.createUser(request, Set.of(userRole));
         User createUser = userRepository.save(newUser);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createUser);
     }
 
@@ -120,13 +129,13 @@ public class UserService {
                     );
                     return ResponseEntity.ok(response);
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new UserNotFoundException("Cannot update. User not found with id: " + id));
+
     }
 
     public ResponseEntity<String> deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Error: User with ID" + id + " not found");
+            throw new UserNotFoundException("User with id" + id + " not found");
         }
         userRepository.deleteById(id);
         return ResponseEntity.ok("User with Id: " + id + " has been deleted successfully.");
