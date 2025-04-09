@@ -10,57 +10,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Check out the repository
+      # Kiểm tra mã nguồn
       - name: Check out the repository
         uses: actions/checkout@v2
 
-      # Set up JDK 21
+      # Thiết lập JDK 21
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'adoptopenjdk'
 
-      # Cache Maven dependencies (by splitting cache for efficient restores)
-      - name: Cache Maven dependencies (general)
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      # Cài đặt và build với Maven
+      - name: Build with Maven
+        run: mvn clean install -DskipTests=false
 
-      # Build project with Maven
-      - name: ⚙️ Build with Maven
-        run: mvn clean install -DskipTests=false -e
-
-      # Run unit tests
-      - name: 🧪 Run Tests
+      # Chạy tests
+      - name: Run Tests
         run: mvn test
-
-      # Upload test results as artifacts
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-results
-          path: target/test-classes
-
-      # Package application (optional)
-      - name: 📦 Package (Optional)
-        run: mvn package
-
-      # Check code style and analyze code quality (using Checkstyle or similar)
-      - name: 🔍 Check formatting or code analysis
-        run: mvn checkstyle:check
-
-      # Scan for security vulnerabilities in dependencies
-      - name: 🔐 Scan for vulnerabilities
-        run: mvn org.owasp:dependency-check-maven:check
-          
-      # Upload packaged artifact if needed
-      - name: Upload Maven artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifact
-          path: target/*.jar  # Or path to your build artifact
-
